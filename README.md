@@ -20,9 +20,9 @@ import (
 func (svc *service)someMethod(id) error {
   if err := svc.db.Get(id); err != nil {
     if err == database.NotFoundError {
-      return errors.NewStorageError(404, "add your own error message here")
+      return errors.NewCloudError(404, "add your own error message here")
     }
-    return errors.NewStorageError(500, err.Error())
+    return errors.NewCloudError(500, err.Error())
   }
 }
 ```

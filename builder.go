@@ -7,13 +7,13 @@ import (
 	"time"
 )
 
-type storageErrorBuilder struct {
-	err *StorageError
+type cloudErrorBuilder struct {
+	err *CloudError
 }
 
-func NewStorageErrorBuilder() *storageErrorBuilder {
-	return &storageErrorBuilder{
-		&StorageError{
+func NewCloudErrorBuilder() *cloudErrorBuilder {
+	return &cloudErrorBuilder{
+		&CloudError{
 			ErrorLocation: ErrorLocation{
 				skip: 2,
 			},
@@ -21,7 +21,7 @@ func NewStorageErrorBuilder() *storageErrorBuilder {
 	}
 }
 
-func (s *storageErrorBuilder) StatusCode(statusCode int) *storageErrorBuilder {
+func (s *cloudErrorBuilder) StatusCode(statusCode int) *cloudErrorBuilder {
 	if statusCode < 100 || statusCode > 599 {
 		statusCode = 500
 	}
@@ -30,40 +30,40 @@ func (s *storageErrorBuilder) StatusCode(statusCode int) *storageErrorBuilder {
 	return s
 }
 
-func (s *storageErrorBuilder) Message(errMsg string) *storageErrorBuilder {
+func (s *cloudErrorBuilder) Message(errMsg string) *cloudErrorBuilder {
 	s.err.Message = errMsg
 	return s
 }
 
-func (s *storageErrorBuilder) ErrorLocation(svc, pkg, fnc string) *storageErrorBuilder {
+func (s *cloudErrorBuilder) ErrorLocation(svc, pkg, fnc string) *cloudErrorBuilder {
 	s.err.ErrorLocation.Service = svc
 	s.err.ErrorLocation.Method = fnc
 	return s
 }
 
-func (s *storageErrorBuilder) CustomCode(code CustomCode) *storageErrorBuilder {
+func (s *cloudErrorBuilder) CustomCode(code CustomCode) *cloudErrorBuilder {
 	s.err.CustomCode = code
 	return s
 }
 
-func (s *storageErrorBuilder) CorrelationID(id string) *storageErrorBuilder {
+func (s *cloudErrorBuilder) CorrelationID(id string) *cloudErrorBuilder {
 	s.err.CorrelationID = id
 	return s
 }
 
-func (s *storageErrorBuilder) Tags(tags ...string) *storageErrorBuilder {
+func (s *cloudErrorBuilder) Tags(tags ...string) *cloudErrorBuilder {
 	s.err.Tags = append(s.err.Tags, tags...)
 	return s
 }
 
 // SkipCaller allows you to skip levels of the trace when trying to determine in which
 // method the errors was called.
-func (s *storageErrorBuilder) SkipCaller(skip int) *storageErrorBuilder {
+func (s *cloudErrorBuilder) SkipCaller(skip int) *cloudErrorBuilder {
 	s.err.ErrorLocation.skip = skip
 	return s
 }
 
-func (s *storageErrorBuilder) Build(t time.Time, options ...StorageErrorOption) *StorageError {
+func (s *cloudErrorBuilder) Build(t time.Time, options ...CloudErrorOption) *CloudError {
 	if s.err.StatusCode == 0 {
 		s.err.StatusCode = 500
 		s.err.Status = http.StatusText(500)

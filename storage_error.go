@@ -10,7 +10,7 @@ const (
 	NotFound            CustomCode = "NotFound"
 )
 
-type StorageError struct {
+type CloudError struct {
 	StatusCode    int           `json:"statusCode"`
 	Status        string        `json:"status"`
 	Message       string        `json:"message"`
@@ -31,16 +31,16 @@ type ErrorLocation struct {
 
 type CustomCode string
 
-func (se *StorageError) Error() string {
+func (se *CloudError) Error() string {
 	byt, _ := json.MarshalIndent(se, "", "  ")
 
 	return string(byt)
 }
 
-type StorageErrorOption func(*StorageError)
+type CloudErrorOption func(*CloudError)
 
-func NewStorageError(statusCode int, message string, options ...StorageErrorOption) *StorageError {
-	se := NewStorageErrorBuilder().
+func NewCloudError(statusCode int, message string, options ...CloudErrorOption) *CloudError {
+	se := NewCloudErrorBuilder().
 		StatusCode(statusCode).
 		Message(message).
 		Build(time.Now().UTC(), options...)

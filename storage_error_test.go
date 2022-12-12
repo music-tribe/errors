@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func TestNewStorageError(t *testing.T) {
+func TestNewCloudError(t *testing.T) {
 	_, testPage, _, _ := runtime.Caller(0)
 
 	When("the status code is not provided", t,
@@ -25,7 +25,7 @@ func TestNewStorageError(t *testing.T) {
 				pc, _, _, _ := runtime.Caller(0)
 				rtFunc := runtime.FuncForPC(pc)
 				line := 37
-				setLine := func(se *StorageError) { se.ErrorLocation.Line = line }
+				setLine := func(se *CloudError) { se.ErrorLocation.Line = line }
 				el := ErrorLocation{
 					Method: rtFunc.Name(),
 					Page:   testPage,
@@ -33,8 +33,8 @@ func TestNewStorageError(t *testing.T) {
 					skip:   2,
 				}
 
-				setTimeOpt := func(se *StorageError) { se.TimeStamp = timeNow }
-				want := StorageError{
+				setTimeOpt := func(se *CloudError) { se.TimeStamp = timeNow }
+				want := CloudError{
 					StatusCode:    wantSc,
 					Status:        wantStatus,
 					Message:       msg,
@@ -43,8 +43,8 @@ func TestNewStorageError(t *testing.T) {
 					ErrorLocation: el,
 				}
 
-				if got := NewStorageError(sc, msg, setTimeOpt, setLine); !reflect.DeepEqual(*got, want) {
-					t.Errorf("NewStorageError() = \n%v\n but want \n%v\n", *got, want)
+				if got := NewCloudError(sc, msg, setTimeOpt, setLine); !reflect.DeepEqual(*got, want) {
+					t.Errorf("NewCloudError() = \n%v\n but want \n%v\n", *got, want)
 					return
 				}
 			},
@@ -62,7 +62,7 @@ func TestNewStorageError(t *testing.T) {
 			pc, _, _, _ := runtime.Caller(0)
 			rtFunc := runtime.FuncForPC(pc)
 			line := 37
-			setLine := func(se *StorageError) { se.ErrorLocation.Line = line }
+			setLine := func(se *CloudError) { se.ErrorLocation.Line = line }
 			el := ErrorLocation{
 				Method: rtFunc.Name(),
 				Page:   testPage,
@@ -70,8 +70,8 @@ func TestNewStorageError(t *testing.T) {
 				skip:   2,
 			}
 
-			setTimeOpt := func(se *StorageError) { se.TimeStamp = timeNow }
-			want := StorageError{
+			setTimeOpt := func(se *CloudError) { se.TimeStamp = timeNow }
+			want := CloudError{
 				StatusCode:    wantSc,
 				Status:        wantStatus,
 				Message:       msg,
@@ -80,8 +80,8 @@ func TestNewStorageError(t *testing.T) {
 				ErrorLocation: el,
 			}
 
-			if got := NewStorageError(sc, msg, setTimeOpt, setLine); !reflect.DeepEqual(*got, want) {
-				t.Errorf("NewStorageError() = \n%v\n but want \n%v\n", *got, want)
+			if got := NewCloudError(sc, msg, setTimeOpt, setLine); !reflect.DeepEqual(*got, want) {
+				t.Errorf("NewCloudError() = \n%v\n but want \n%v\n", *got, want)
 			}
 		}),
 	)
@@ -97,7 +97,7 @@ func TestNewStorageError(t *testing.T) {
 			pc, _, _, _ := runtime.Caller(0)
 			rtFunc := runtime.FuncForPC(pc)
 			line := 37
-			setLine := func(se *StorageError) { se.ErrorLocation.Line = line }
+			setLine := func(se *CloudError) { se.ErrorLocation.Line = line }
 			el := ErrorLocation{
 				Method: rtFunc.Name(),
 				Page:   testPage,
@@ -105,8 +105,8 @@ func TestNewStorageError(t *testing.T) {
 				skip:   2,
 			}
 
-			setTimeOpt := func(se *StorageError) { se.TimeStamp = timeNow }
-			want := StorageError{
+			setTimeOpt := func(se *CloudError) { se.TimeStamp = timeNow }
+			want := CloudError{
 				StatusCode:    wantSc,
 				Status:        wantStatus,
 				Message:       wantStatus,
@@ -115,8 +115,8 @@ func TestNewStorageError(t *testing.T) {
 				ErrorLocation: el,
 			}
 
-			if got := NewStorageError(wantSc, inputMsg, setTimeOpt, setLine); !reflect.DeepEqual(*got, want) {
-				t.Errorf("NewStorageError() = \n%v\n but want \n%v\n", *got, want)
+			if got := NewCloudError(wantSc, inputMsg, setTimeOpt, setLine); !reflect.DeepEqual(*got, want) {
+				t.Errorf("NewCloudError() = \n%v\n but want \n%v\n", *got, want)
 			}
 		}),
 	)
@@ -132,7 +132,7 @@ func TestNewStorageError(t *testing.T) {
 			pc, _, _, _ := runtime.Caller(0)
 			rtFunc := runtime.FuncForPC(pc)
 			line := 37
-			setLine := func(se *StorageError) { se.ErrorLocation.Line = line }
+			setLine := func(se *CloudError) { se.ErrorLocation.Line = line }
 			el := ErrorLocation{
 				Method: rtFunc.Name(),
 				Page:   testPage,
@@ -140,8 +140,8 @@ func TestNewStorageError(t *testing.T) {
 				skip:   2,
 			}
 
-			setTimeOpt := func(se *StorageError) { se.TimeStamp = timeNow }
-			want := StorageError{
+			setTimeOpt := func(se *CloudError) { se.TimeStamp = timeNow }
+			want := CloudError{
 				StatusCode:    wantSc,
 				Status:        wantStatus,
 				Message:       inputMsg,
@@ -150,8 +150,8 @@ func TestNewStorageError(t *testing.T) {
 				ErrorLocation: el,
 			}
 
-			if got := NewStorageError(wantSc, inputMsg, setTimeOpt, setLine); !reflect.DeepEqual(*got, want) {
-				t.Errorf("NewStorageError() = \n%v\n but want \n%v\n", *got, want)
+			if got := NewCloudError(wantSc, inputMsg, setTimeOpt, setLine); !reflect.DeepEqual(*got, want) {
+				t.Errorf("NewCloudError() = \n%v\n but want \n%v\n", *got, want)
 			}
 		}),
 	)
@@ -166,7 +166,7 @@ func TestNewStorageError(t *testing.T) {
 				skip:    2,
 			}
 
-			setErrorLocation := func(se *StorageError) {
+			setErrorLocation := func(se *CloudError) {
 				se.ErrorLocation = errLoc
 			}
 
@@ -174,8 +174,8 @@ func TestNewStorageError(t *testing.T) {
 			wantStatus := http.StatusText(wantSc)
 			timeNow := time.Now().UTC()
 
-			setTimeOpt := func(se *StorageError) { se.TimeStamp = timeNow }
-			want := StorageError{
+			setTimeOpt := func(se *CloudError) { se.TimeStamp = timeNow }
+			want := CloudError{
 				StatusCode:    wantSc,
 				Status:        wantStatus,
 				Message:       wantStatus,
@@ -184,8 +184,8 @@ func TestNewStorageError(t *testing.T) {
 				ErrorLocation: errLoc,
 			}
 
-			if got := NewStorageError(wantSc, "", setTimeOpt, setErrorLocation); !reflect.DeepEqual(*got, want) {
-				t.Errorf("NewStorageError() = \n%v\n but want \n%v\n", *got, want)
+			if got := NewCloudError(wantSc, "", setTimeOpt, setErrorLocation); !reflect.DeepEqual(*got, want) {
+				t.Errorf("NewCloudError() = \n%v\n but want \n%v\n", *got, want)
 			}
 		}),
 	)
@@ -203,9 +203,9 @@ func TestNewStorageError(t *testing.T) {
 			wantStatus := http.StatusText(wantSc)
 			timeNow := time.Now().UTC()
 
-			setSkip := func(se *StorageError) { se.ErrorLocation.skip = skip }
-			setTimeOpt := func(se *StorageError) { se.TimeStamp = timeNow }
-			want := StorageError{
+			setSkip := func(se *CloudError) { se.ErrorLocation.skip = skip }
+			setTimeOpt := func(se *CloudError) { se.TimeStamp = timeNow }
+			want := CloudError{
 				StatusCode:    wantSc,
 				Status:        wantStatus,
 				Message:       wantStatus,
@@ -215,13 +215,13 @@ func TestNewStorageError(t *testing.T) {
 			}
 
 			pc, _, _line, _ := runtime.Caller(1)
-			got := NewStorageError(wantSc, "", setTimeOpt, setSkip)
+			got := NewCloudError(wantSc, "", setTimeOpt, setSkip)
 
 			want.ErrorLocation.Line = _line
 			want.ErrorLocation.Method = runtime.FuncForPC(pc).Name()
 
 			if !reflect.DeepEqual(*got, want) {
-				t.Errorf("NewStorageError() = \n%v\n but want \n%v\n", *got, want)
+				t.Errorf("NewCloudError() = \n%v\n but want \n%v\n", *got, want)
 			}
 		}),
 	)
@@ -252,9 +252,9 @@ func And(description string, do func(t *testing.T)) func(t *testing.T) {
 }
 
 func TestQuick(t *testing.T) {
-	var se *StorageError
+	var se *CloudError
 	f := func(statusCode int, message string) bool {
-		se = NewStorageError(statusCode, message)
+		se = NewCloudError(statusCode, message)
 
 		return !se.TimeStamp.IsZero() &&
 			(se.StatusCode == statusCode || se.StatusCode == 500) &&
