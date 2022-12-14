@@ -27,3 +27,52 @@ func (svc *service)someMethod(id) error {
 }
 ```
 
+## Functional Options
+We have the ability to use functional options when initializing an error. These options passed to the `NewCloudError` method via the `CloudErrorOption` type...
+```golang
+type CloudErrorOption func(*CloudError)
+```
+These options offer the chance to alter any of the fields within the `CloudError` object (or any of it's child objects)...
+```golang
+type CloudError struct {
+	StatusCode    int           `json:"statusCode"`
+	Status        string        `json:"status"`
+	Message       string        `json:"message"`
+	TimeStamp     time.Time     `json:"timeStamp"`
+	CustomCode    CustomCode    `json:"customCode"`
+	ErrorLocation ErrorLocation `json:"location,omitempty"`
+	CorrelationID string        `json:"correlationID"`
+	Tags          []string      `json:"tags,omitempty"`
+}
+
+type ErrorLocation struct {
+	Service string `json:"service,omitempty"`
+	Method  string `json:"method,omitempty"`
+	Page    string `json:"page,omitempty"`
+	Line    int    `json:"line,omitempty"`
+	skip    int    `json:"-"`
+}
+
+type CustomCode string
+```
+You can create and pass as many options as is necessary to customise you `CloudError`. The `NewCloudError` method is actually a variadic function, allowing you to pass an arbitrary number of `CloudErrorOptions` into the 3rd parameter...
+```golang
+func setErrorLocationService(svc string) CloudErrorOption {
+  return func(ce *CloudError) {
+    ce.ErrorLocation.Service = svc
+  }
+}
+
+func doSomethingAuthy() {
+  ...
+
+  if err != nil {
+    return errors.NewCloudError(403, "some auth issue", setErrorLocationService("myService"))
+  }
+  ...
+}
+```
+
+## Contributing
+Contribution to this package will only be permitted for Music Tribe employees.
+
