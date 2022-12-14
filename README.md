@@ -55,7 +55,7 @@ type ErrorLocation struct {
 
 type CustomCode string
 ```
-You can create and pass as many options as is necessary to customise you `CloudError`. The `NewCloudError` method is actually a variadic function, allowing you to pass an arbitrary number of `CloudErrorOptions` into the 3rd parameter...
+You can create and pass as many options as is necessary to customise your `CloudError`. The `NewCloudError` method is actually a variadic function, allowing you to pass an arbitrary number of `CloudErrorOptions` into the 3rd parameter...
 ```golang
 func setErrorLocationService(svc string) CloudErrorOption {
   return func(ce *CloudError) {
