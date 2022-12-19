@@ -11,13 +11,13 @@ const (
 )
 
 type CloudError struct {
-	StatusCode    int           `json:"statusCode"`
+	StatusCode    int           `json:"status_code"`
 	Status        string        `json:"status"`
 	Message       string        `json:"message"`
-	TimeStamp     time.Time     `json:"timeStamp"`
-	CustomCode    CustomCode    `json:"customCode"`
+	TimeStamp     time.Time     `json:"timestamp"`
+	CustomCode    CustomCode    `json:"custom_code"`
 	ErrorLocation ErrorLocation `json:"location,omitempty"`
-	CorrelationID string        `json:"correlationID"`
+	CorrelationID string        `json:"correlation_id"`
 	Tags          []string      `json:"tags,omitempty"`
 }
 
