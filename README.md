@@ -73,6 +73,27 @@ func doSomethingAuthy() {
 }
 ```
 
+## Custom Echo Error Handler
+By using the custom error handler in this package, any errors from requests made via our echo router will be returned in the `CloudError` JSON format.
+If the `ENVIRONMENT` env var is set to `dev`, you will recieve a detailed error location object as well. (page, line, method)
+```golang
+
+import (
+	"github.com/labstack/echo/v4"
+	"github.com/music-tribe/errors/handlers"
+)
+
+func main() {
+	e := echo.New()
+	
+	// init our custom error handler here - this will return all errors from this router - 
+	// error, echo.HTTPError and CloudError - as CloudError JSON objects
+	e.HTTPErrorHandler = handler.NewCustomHTTPErrorHandler()
+	...
+}
+
+```
+
 ## Contributing
 Contribution to this package will only be permitted for Music Tribe employees.
 
