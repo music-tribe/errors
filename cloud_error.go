@@ -14,6 +14,7 @@ type CloudError struct {
 	StatusCode    int           `json:"status_code"`
 	Status        string        `json:"status"`
 	Message       string        `json:"message"`
+	Source        string        `json:"source"`
 	TimeStamp     time.Time     `json:"timestamp"`
 	CustomCode    CustomCode    `json:"custom_code"`
 	ErrorLocation ErrorLocation `json:"location,omitempty"`

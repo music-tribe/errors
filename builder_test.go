@@ -296,3 +296,22 @@ func Test_cloudErrorBuilder_SkipCaller(t *testing.T) {
 		t.Errorf("cloudErrorBuilder.StatusCode() = \n%+v\n \nwant \n%+v\n", *got, want)
 	}
 }
+
+func Test_cloudErrorBuilder_Source(t *testing.T) {
+	timeNow := time.Now().UTC()
+	t.Run("when we add a source to error it should show up in the CloudError object", func(t *testing.T) {
+		srcname := "azure"
+		got := NewCloudErrorBuilder().Source(srcname).Build(timeNow)
+		if got.Source != srcname {
+			t.Errorf("expected source to be %s but got %s", srcname, got.Source)
+		}
+	})
+
+	t.Run("when no source is provided, it defaults to music-tribe", func(t *testing.T) {
+		want := "music-tribe"
+		got := NewCloudErrorBuilder().Source("").Build(timeNow)
+		if got.Source != want {
+			t.Errorf("expected source to be %s but got %s", want, got.Source)
+		}
+	})
+}
