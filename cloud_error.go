@@ -41,10 +41,10 @@ func (se *CloudError) Error() string {
 
 type CloudErrorOption func(*CloudError)
 
-func NewCloudError(statusCode int, message string, options ...CloudErrorOption) *CloudError {
+func NewCloudError(statusCode int, message any, options ...CloudErrorOption) *CloudError {
 	se := NewCloudErrorBuilder().
 		StatusCode(statusCode).
-		Message(message).
+		Error(message).
 		Build(time.Now().UTC(), options...)
 
 	return se
