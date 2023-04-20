@@ -51,6 +51,18 @@ func (s *cloudErrorBuilder) CorrelationID(id string) *cloudErrorBuilder {
 	return s
 }
 
+func (s *cloudErrorBuilder) Error(err any) *cloudErrorBuilder {
+	switch e := err.(type) {
+	case error:
+		s.err.InternalError = e
+		s.err.Message = e.Error()
+	case string:
+		s.err.Message = e
+	}
+
+	return s
+}
+
 func (s *cloudErrorBuilder) Source(name string) *cloudErrorBuilder {
 	s.err.Source = name
 	return s

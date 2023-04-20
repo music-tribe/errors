@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"errors"
 	"net/http"
 	"reflect"
 	"runtime"
@@ -312,6 +313,41 @@ func Test_cloudErrorBuilder_Source(t *testing.T) {
 		got := NewCloudErrorBuilder().Source("").Build(timeNow)
 		if got.Source != want {
 			t.Errorf("expected source to be %s but got %s", want, got.Source)
+		}
+	})
+}
+
+func Test_cloudErrorBuilder_Error(t *testing.T) {
+	timeNow := time.Now().UTC()
+	t.Run("when we pass an error to the Error builder, we should store this error as the Internal error", func(t *testing.T) {
+		want := errors.New("simple error")
+		got := NewCloudErrorBuilder().Error(want).Build(timeNow)
+		if got.InternalError != want {
+			t.Errorf("expected InternalError to be %v but got %v", want, got.InternalError)
+		}
+	})
+
+	t.Run("when we pass an error to the Error builder, we should store the message within the CloudError message field", func(t *testing.T) {
+		want := errors.New("simple error")
+		got := NewCloudErrorBuilder().Error(want).Build(timeNow)
+		if got.Message != want.Error() {
+			t.Errorf("expected Message to be %s but got %s", want, got.Message)
+		}
+	})
+
+	t.Run("when we pass a string to the Error builder, we should store this string within message field", func(t *testing.T) {
+		want := "simple error"
+		got := NewCloudErrorBuilder().Error(want).Build(timeNow)
+		if got.Message != want {
+			t.Errorf("expected Message to be %v but got %v", want, got.Message)
+		}
+	})
+
+	t.Run("when we pass a string to the Error builder, we expect the internal error to be nil", func(t *testing.T) {
+		want := "simple error"
+		got := NewCloudErrorBuilder().Error(want).Build(timeNow)
+		if got.InternalError != nil {
+			t.Errorf("expected InternalError to be nil but got %v", got.InternalError)
 		}
 	})
 }

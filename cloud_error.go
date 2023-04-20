@@ -20,6 +20,7 @@ type CloudError struct {
 	ErrorLocation ErrorLocation `json:"location,omitempty"`
 	CorrelationID string        `json:"correlation_id"`
 	Tags          []string      `json:"tags,omitempty"`
+	InternalError error         `json:"internal_error"`
 }
 
 type ErrorLocation struct {
