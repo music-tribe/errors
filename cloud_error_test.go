@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -37,6 +38,7 @@ func TestNewCloudError(t *testing.T) {
 				want := CloudError{
 					StatusCode:    wantSc,
 					Status:        wantStatus,
+					Source:        "music-tribe",
 					Message:       msg,
 					TimeStamp:     timeNow,
 					CustomCode:    InternalServerError,
@@ -74,6 +76,7 @@ func TestNewCloudError(t *testing.T) {
 			want := CloudError{
 				StatusCode:    wantSc,
 				Status:        wantStatus,
+				Source:        "music-tribe",
 				Message:       msg,
 				TimeStamp:     timeNow,
 				CustomCode:    NotFound,
@@ -109,6 +112,7 @@ func TestNewCloudError(t *testing.T) {
 			want := CloudError{
 				StatusCode:    wantSc,
 				Status:        wantStatus,
+				Source:        "music-tribe",
 				Message:       wantStatus,
 				TimeStamp:     timeNow,
 				CustomCode:    "Forbidden",
@@ -144,6 +148,7 @@ func TestNewCloudError(t *testing.T) {
 			want := CloudError{
 				StatusCode:    wantSc,
 				Status:        wantStatus,
+				Source:        "music-tribe",
 				Message:       inputMsg,
 				TimeStamp:     timeNow,
 				CustomCode:    "Forbidden",
@@ -178,6 +183,7 @@ func TestNewCloudError(t *testing.T) {
 			want := CloudError{
 				StatusCode:    wantSc,
 				Status:        wantStatus,
+				Source:        "music-tribe",
 				Message:       wantStatus,
 				TimeStamp:     timeNow,
 				CustomCode:    "Forbidden",
@@ -208,6 +214,7 @@ func TestNewCloudError(t *testing.T) {
 			want := CloudError{
 				StatusCode:    wantSc,
 				Status:        wantStatus,
+				Source:        "music-tribe",
 				Message:       wantStatus,
 				TimeStamp:     timeNow,
 				CustomCode:    "Forbidden",
@@ -226,6 +233,21 @@ func TestNewCloudError(t *testing.T) {
 		}),
 	)
 
+	When("we pass an error as the argument", t,
+		Then("the errors original message should be in the error", func(t *testing.T) {
+			wantMsg := "simple error"
+			if got := NewCloudError(400, errors.New(wantMsg)); got.Message != wantMsg {
+				t.Errorf("expected Message to be '%s' but got '%s'", wantMsg, got.Message)
+			}
+		}),
+		And("the error should be stored as an internal error", func(t *testing.T) {
+			wantErr := errors.New("simple error")
+
+			if got := NewCloudError(400, wantErr); got.InternalError != wantErr {
+				t.Errorf("expected Message to be '%s' but got '%s'", wantErr, got.InternalError)
+			}
+		}),
+	)
 }
 
 func When(description string, t *testing.T, then ...func(t *testing.T)) {

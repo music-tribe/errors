@@ -14,11 +14,13 @@ type CloudError struct {
 	StatusCode    int           `json:"status_code"`
 	Status        string        `json:"status"`
 	Message       string        `json:"message"`
+	Source        string        `json:"source"`
 	TimeStamp     time.Time     `json:"timestamp"`
 	CustomCode    CustomCode    `json:"custom_code"`
 	ErrorLocation ErrorLocation `json:"location,omitempty"`
 	CorrelationID string        `json:"correlation_id"`
 	Tags          []string      `json:"tags,omitempty"`
+	InternalError error         `json:"internal_error"`
 }
 
 type ErrorLocation struct {
@@ -39,10 +41,10 @@ func (se *CloudError) Error() string {
 
 type CloudErrorOption func(*CloudError)
 
-func NewCloudError(statusCode int, message string, options ...CloudErrorOption) *CloudError {
+func NewCloudError(statusCode int, message any, options ...CloudErrorOption) *CloudError {
 	se := NewCloudErrorBuilder().
 		StatusCode(statusCode).
-		Message(message).
+		Error(message).
 		Build(time.Now().UTC(), options...)
 
 	return se

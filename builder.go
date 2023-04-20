@@ -51,6 +51,23 @@ func (s *cloudErrorBuilder) CorrelationID(id string) *cloudErrorBuilder {
 	return s
 }
 
+func (s *cloudErrorBuilder) Error(err any) *cloudErrorBuilder {
+	switch e := err.(type) {
+	case error:
+		s.err.InternalError = e
+		s.err.Message = e.Error()
+	case string:
+		s.err.Message = e
+	}
+
+	return s
+}
+
+func (s *cloudErrorBuilder) Source(name string) *cloudErrorBuilder {
+	s.err.Source = name
+	return s
+}
+
 func (s *cloudErrorBuilder) Tags(tags ...string) *cloudErrorBuilder {
 	s.err.Tags = append(s.err.Tags, tags...)
 	return s
@@ -73,6 +90,9 @@ func (s *cloudErrorBuilder) Build(t time.Time, options ...CloudErrorOption) *Clo
 	}
 	if s.err.CustomCode == "" {
 		s.err.CustomCode = CustomCode(strings.ReplaceAll(s.err.Status, " ", ""))
+	}
+	if s.err.Source == "" {
+		s.err.Source = "music-tribe"
 	}
 
 	pc, page, line, _ := runtime.Caller(s.err.ErrorLocation.skip)

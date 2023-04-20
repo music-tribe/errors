@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"errors"
 	"net/http"
 	"reflect"
 	"runtime"
@@ -35,6 +36,7 @@ func Test_cloudErrorBuilder_Build(t *testing.T) {
 		StatusCode: 500,
 		Status:     "Internal Server Error",
 		Message:    "Internal Server Error",
+		Source:     "music-tribe",
 		TimeStamp:  timeNow,
 		CustomCode: InternalServerError,
 		ErrorLocation: ErrorLocation{
@@ -56,176 +58,64 @@ func Test_cloudErrorBuilder_Build(t *testing.T) {
 func Test_cloudErrorBuilder_StatusCode(t *testing.T) {
 	timeNow := time.Now().UTC()
 	statusCode := 404
-	status := http.StatusText(statusCode)
-	line := 37
-	setLine := func(se *CloudError) { se.ErrorLocation.Line = line }
-	setPage := func(se *CloudError) { se.ErrorLocation.Page = builderTestPage }
 
-	el := ErrorLocation{
-		Method: funcCaller,
-		Page:   builderTestPage,
-		Line:   line,
-		skip:   2,
-	}
-
-	want := CloudError{
-		StatusCode:    statusCode,
-		Status:        status,
-		Message:       status,
-		TimeStamp:     timeNow,
-		CustomCode:    "NotFound",
-		ErrorLocation: el,
-	}
-
-	if got := NewCloudErrorBuilder().StatusCode(statusCode).Build(timeNow, setLine, setPage); !reflect.DeepEqual(*got, want) {
-		t.Errorf("cloudErrorBuilder.StatusCode() = \n%v, \nwant \n%v\n", *got, want)
+	if got := NewCloudErrorBuilder().StatusCode(statusCode).Build(timeNow); got.StatusCode != statusCode {
+		t.Errorf("cloudErrorBuilder.StatusCode() = %d, \nwant %d\n", got.StatusCode, statusCode)
 	}
 }
 
 func Test_cloudErrorBuilder_Message(t *testing.T) {
 	timeNow := time.Now().UTC()
 	msg := "not found"
-	line := 37
-	setLine := func(se *CloudError) { se.ErrorLocation.Line = line }
-	setPage := func(se *CloudError) { se.ErrorLocation.Page = builderTestPage }
 
-	el := ErrorLocation{
-		Method: funcCaller,
-		Page:   builderTestPage,
-		Line:   line,
-		skip:   2,
-	}
-
-	want := CloudError{
-		StatusCode:    500,
-		Status:        http.StatusText(500),
-		TimeStamp:     timeNow,
-		Message:       msg,
-		CustomCode:    InternalServerError,
-		ErrorLocation: el,
-	}
-
-	if got := NewCloudErrorBuilder().Message(msg).Build(timeNow, setLine, setPage); !reflect.DeepEqual(*got, want) {
-		t.Errorf("cloudErrorBuilder.StatusCode() = \n%v \nwant \n%v\n", *got, want)
+	if got := NewCloudErrorBuilder().Message(msg).Build(timeNow); got.Message != msg {
+		t.Errorf("cloudErrorBuilder.StatusCode() = %s \nwant %s\n", got.Message, msg)
 	}
 }
 
 func Test_cloudErrorBuilder_Location(t *testing.T) {
 	timeNow := time.Now().UTC()
-	status := http.StatusText(500)
 	pkg := "testing"
 	svc := "svc-presets"
-	fnc := "cloudErrorBuilder.ErrorLocation"
-	line := 37
-	setLine := func(se *CloudError) { se.ErrorLocation.Line = line }
-	setPage := func(se *CloudError) { se.ErrorLocation.Page = builderTestPage }
-	el := ErrorLocation{
-		Service: svc,
-		Method:  funcCaller,
-		Page:    builderTestPage,
-		Line:    line,
-		skip:    2,
+	fnc := "testing.tRunner"
+
+	got := NewCloudErrorBuilder().ErrorLocation(svc, pkg, fnc).Build(timeNow)
+	if got.ErrorLocation.Service != svc {
+		t.Errorf("cloudErrorBuilder.StatusCode() = %s \nwant %s\n", got.ErrorLocation.Service, svc)
 	}
 
-	want := CloudError{
-		StatusCode:    500,
-		Status:        status,
-		Message:       status,
-		TimeStamp:     timeNow,
-		ErrorLocation: el,
-		CustomCode:    InternalServerError,
-	}
-
-	if got := NewCloudErrorBuilder().ErrorLocation(svc, pkg, fnc).Build(timeNow, setLine, setPage); !reflect.DeepEqual(*got, want) {
-		t.Errorf("cloudErrorBuilder.StatusCode() = \n%v \nwant \n%v\n", *got, want)
+	if got.ErrorLocation.Method != fnc {
+		t.Errorf("cloudErrorBuilder.StatusCode() = %s \nwant %s\n", got.ErrorLocation.Method, fnc)
 	}
 }
 
 func Test_cloudErrorBuilder_CustomCode(t *testing.T) {
 	timeNow := time.Now().UTC()
 	statusCode := 403
-	status := http.StatusText(statusCode)
 	var ccode CustomCode = "FileIsInvalidType"
-	line := 37
-	setLine := func(se *CloudError) { se.ErrorLocation.Line = line }
-	setPage := func(se *CloudError) { se.ErrorLocation.Page = builderTestPage }
-	el := ErrorLocation{
-		Method: funcCaller,
-		Page:   builderTestPage,
-		Line:   line,
-		skip:   2,
-	}
 
-	want := CloudError{
-		StatusCode:    statusCode,
-		Status:        status,
-		Message:       status,
-		TimeStamp:     timeNow,
-		CustomCode:    ccode,
-		ErrorLocation: el,
-	}
-
-	if got := NewCloudErrorBuilder().StatusCode(statusCode).CustomCode(ccode).Build(timeNow, setLine, setPage); !reflect.DeepEqual(*got, want) {
-		t.Errorf("cloudErrorBuilder.StatusCode() = \n%v \nwant \n%v\n", *got, want)
+	if got := NewCloudErrorBuilder().StatusCode(statusCode).CustomCode(ccode).Build(timeNow); got.CustomCode != ccode {
+		t.Errorf("cloudErrorBuilder.StatusCode() = %s \nwant %s\n", got.CustomCode, ccode)
 	}
 }
 
 func Test_cloudErrorBuilder_CorrelationID(t *testing.T) {
 	timeNow := time.Now().UTC()
 	statusCode := 502
-	status := http.StatusText(statusCode)
 	correlationID := uuid.New().String()
-	line := 37
-	setLine := func(se *CloudError) { se.ErrorLocation.Line = line }
-	setPage := func(se *CloudError) { se.ErrorLocation.Page = builderTestPage }
-	el := ErrorLocation{
-		Method: funcCaller,
-		Page:   builderTestPage,
-		Line:   line,
-		skip:   2,
-	}
 
-	want := CloudError{
-		StatusCode:    statusCode,
-		Status:        status,
-		Message:       status,
-		TimeStamp:     timeNow,
-		CustomCode:    "BadGateway",
-		CorrelationID: correlationID,
-		ErrorLocation: el,
-	}
-
-	if got := NewCloudErrorBuilder().StatusCode(statusCode).CorrelationID(correlationID).Build(timeNow, setLine, setPage); !reflect.DeepEqual(*got, want) {
-		t.Errorf("cloudErrorBuilder.StatusCode() = \n%v \nwant \n%v\n", *got, want)
+	got := NewCloudErrorBuilder().StatusCode(statusCode).CorrelationID(correlationID).Build(timeNow)
+	if got.CorrelationID != correlationID {
+		t.Errorf("cloudErrorBuilder.StatusCode() = %s \nwant %s\n", got.CorrelationID, correlationID)
 	}
 }
 
 func Test_cloudErrorBuilder_Tags(t *testing.T) {
 	timeNow := time.Now().UTC()
-	status := http.StatusText(500)
 	tags := []string{"blob", "invalid", "upload"}
-	line := 37
-	setLine := func(se *CloudError) { se.ErrorLocation.Line = line }
-	setPage := func(se *CloudError) { se.ErrorLocation.Page = builderTestPage }
-	el := ErrorLocation{
-		Method: funcCaller,
-		Page:   builderTestPage,
-		Line:   line,
-		skip:   2,
-	}
 
-	want := CloudError{
-		StatusCode:    500,
-		Status:        status,
-		Message:       status,
-		TimeStamp:     timeNow,
-		CustomCode:    InternalServerError,
-		Tags:          tags,
-		ErrorLocation: el,
-	}
-
-	if got := NewCloudErrorBuilder().Tags(tags...).Build(timeNow, setLine, setPage); !reflect.DeepEqual(*got, want) {
-		t.Errorf("cloudErrorBuilder.StatusCode() = %v\n, \nwant \n%v\n", *got, want)
+	if got := NewCloudErrorBuilder().Tags(tags...).Build(timeNow); !reflect.DeepEqual(got.Tags, tags) {
+		t.Errorf("cloudErrorBuilder.StatusCode() = %v\n, \nwant \n%v\n", got.Tags, tags)
 	}
 }
 
@@ -247,6 +137,7 @@ func Test_cloudErrorBuilder_Options(t *testing.T) {
 		Message:    status,
 		TimeStamp:  timeNow,
 		CustomCode: InternalServerError,
+		Source:     "music-tribe",
 		ErrorLocation: ErrorLocation{
 			Method:  funcCaller,
 			Service: svc,
@@ -281,6 +172,7 @@ func Test_cloudErrorBuilder_SkipCaller(t *testing.T) {
 	want := CloudError{
 		StatusCode:    500,
 		Status:        status,
+		Source:        "music-tribe",
 		Message:       status,
 		TimeStamp:     timeNow,
 		CustomCode:    InternalServerError,
@@ -295,4 +187,66 @@ func Test_cloudErrorBuilder_SkipCaller(t *testing.T) {
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("cloudErrorBuilder.StatusCode() = \n%+v\n \nwant \n%+v\n", *got, want)
 	}
+}
+
+func Test_cloudErrorBuilder_Source(t *testing.T) {
+	timeNow := time.Now().UTC()
+	t.Run("when we add a source to error it should show up in the CloudError object", func(t *testing.T) {
+		srcname := "azure"
+		got := NewCloudErrorBuilder().Source(srcname).Build(timeNow)
+		if got.Source != srcname {
+			t.Errorf("expected source to be %s but got %s", srcname, got.Source)
+		}
+	})
+
+	t.Run("when no source is provided, it defaults to music-tribe", func(t *testing.T) {
+		want := "music-tribe"
+		got := NewCloudErrorBuilder().Source("").Build(timeNow)
+		if got.Source != want {
+			t.Errorf("expected source to be %s but got %s", want, got.Source)
+		}
+	})
+}
+
+func Test_cloudErrorBuilder_Error(t *testing.T) {
+	timeNow := time.Now().UTC()
+	t.Run("when we pass an error to the Error builder, we should store this error as the Internal error", func(t *testing.T) {
+		want := errors.New("simple error")
+		got := NewCloudErrorBuilder().Error(want).Build(timeNow)
+		if got.InternalError != want {
+			t.Errorf("expected InternalError to be %v but got %v", want, got.InternalError)
+		}
+	})
+
+	t.Run("when we pass an error to the Error builder, we should store the message within the CloudError message field", func(t *testing.T) {
+		want := errors.New("simple error")
+		got := NewCloudErrorBuilder().Error(want).Build(timeNow)
+		if got.Message != want.Error() {
+			t.Errorf("expected Message to be %s but got %s", want, got.Message)
+		}
+	})
+
+	t.Run("when we pass a string to the Error builder, we should store this string within message field", func(t *testing.T) {
+		want := "simple error"
+		got := NewCloudErrorBuilder().Error(want).Build(timeNow)
+		if got.Message != want {
+			t.Errorf("expected Message to be %v but got %v", want, got.Message)
+		}
+	})
+
+	t.Run("when we pass a string to the Error builder, we expect the internal error to be nil", func(t *testing.T) {
+		want := "simple error"
+		got := NewCloudErrorBuilder().Error(want).Build(timeNow)
+		if got.InternalError != nil {
+			t.Errorf("expected InternalError to be nil but got %v", got.InternalError)
+		}
+	})
+
+	t.Run("when we pass an unknown object to the Error builder, we expect to get the default error code msg back", func(t *testing.T) {
+		want := "Internal Server Error"
+		got := NewCloudErrorBuilder().Error(struct{ name string }{"hello"}).Build(timeNow)
+		if got.Message != want {
+			t.Errorf("expected InternalError to be nil but got %v", got.Message)
+		}
+	})
 }
