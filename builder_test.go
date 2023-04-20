@@ -241,4 +241,12 @@ func Test_cloudErrorBuilder_Error(t *testing.T) {
 			t.Errorf("expected InternalError to be nil but got %v", got.InternalError)
 		}
 	})
+
+	t.Run("when we pass an unknown object to the Error builder, we expect to get the default error code msg back", func(t *testing.T) {
+		want := "Internal Server Error"
+		got := NewCloudErrorBuilder().Error(struct{ name string }{"hello"}).Build(timeNow)
+		if got.Message != want {
+			t.Errorf("expected InternalError to be nil but got %v", got.Message)
+		}
+	})
 }
